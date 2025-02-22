@@ -1,13 +1,17 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore"; // Thêm useAuthStore
+import { Image, Send, X, Phone } from "lucide-react";
 import toast from "react-hot-toast";
+import VideoCall from "./VideoCall"; // Import component VideoCall
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // State để quản lý giao diện video call
   const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const { sendMessage, selectedUser } = useChatStore(); // Lấy selectedUser từ useChatStore
+  const { authUser } = useAuthStore(); // Lấy authUser từ useAuthStore
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -38,13 +42,22 @@ const MessageInput = () => {
         image: imagePreview,
       });
 
-      // Clear form
       setText("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
     }
+  };
+
+  const handleVideoCall = () => {
+    if (!selectedUser) {
+      toast.error("Please select a user to start a video call");
+      return;
+    }
+
+    // Mở giao diện video call
+    setIsVideoCallOpen(true);
   };
 
   return (
@@ -74,7 +87,7 @@ const MessageInput = () => {
           <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder="Type a message..."
+            placeholder="Nhập tin nhắn..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
@@ -95,6 +108,17 @@ const MessageInput = () => {
             <Image size={20} />
           </button>
         </div>
+
+        {/* Nút điện thoại */}
+        <button
+          type="button"
+          onClick={handleVideoCall}
+          className="btn btn-sm btn-circle text-blue-500 hover:text-blue-600"
+        >
+          <Phone size={22} />
+        </button>
+
+        {/* Nút gửi tin nhắn */}
         <button
           type="submit"
           className="btn btn-sm btn-circle"
@@ -103,7 +127,16 @@ const MessageInput = () => {
           <Send size={22} />
         </button>
       </form>
+
+      {isVideoCallOpen && (
+        <VideoCall
+          selectedUser={selectedUser}
+          authUser={authUser}
+          onClose={() => setIsVideoCallOpen(false)}
+        />
+      )}
     </div>
   );
 };
+
 export default MessageInput;

@@ -23,7 +23,33 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   if (userId) userSocketMap[userId] = socket.id;
 
+  // Emit online users to all clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  // Handle video call signaling
+  socket.on("callUser", (data) => {
+    const { from, to, signal } = data;
+    const toSocketId = userSocketMap[to];
+    if (toSocketId) {
+      io.to(toSocketId).emit("incomingCall", { from, signal });
+    }
+  });
+
+  socket.on("acceptCall", (data) => {
+    const { to, signal } = data;
+    const toSocketId = userSocketMap[to];
+    if (toSocketId) {
+      io.to(toSocketId).emit("callAccepted", signal);
+    }
+  });
+
+  socket.on("endCall", (data) => {
+    const { to } = data;
+    const toSocketId = userSocketMap[to];
+    if (toSocketId) {
+      io.to(toSocketId).emit("callEnded");
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("A user disconnected", socket.id);
