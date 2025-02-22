@@ -21,7 +21,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://0b54-14-0-28-49.ngrok-free.app"],
+    origin: ["http://localhost:5173", "http://3.94.184.98:5173"],
     credentials: true,
   })
 );
