@@ -7,7 +7,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://13.211.117.49","http://chattop1.xyz",],
+    origin: ["http://13.211.117.49","http://www.chattop1.xyz",],
     credentials: true,
   },
 });

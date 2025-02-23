@@ -21,7 +21,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://13.211.117.49",],
+    origin: ["http://13.211.117.49","http://chattop1.xyz",],
     credentials: true, // Hỗ trợ gửi cookie & authentication
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
